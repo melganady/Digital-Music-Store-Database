@@ -1,0 +1,64 @@
+
+
+1-- Who is the best customer?
+
+SELECT c.CustomerId, (c.FirstName ||' '|| c.LastName) AS CustomerName, sum(Total) AS TotalInv
+FROM Customer c
+JOIN Invoice n USING ('CustomerId')
+GROUP BY CustomerId
+ORDER BY TotalInv DESC
+LIMIT 5
+
+
+2-- Who is writing the rock music?
+
+SELECT ar.Name, g.Name, count ('TrackId') AS Tracks
+FROM Artist AS ar
+JOIN Album As al USING ('ArtistId')
+JOIN Track AS t USING ('AlbumId')
+JOIN Genre AS g USING ('GenreId')
+WHERE g.name = 'Rock'
+GROUP BY ar.Name
+ORDER BY Tracks DESC
+Limit 10
+
+3-- which artist has earned the most according to the InvoiceLines?
+
+SELECT ar.Name, sum(il.UnitPrice * il.Quantity) As AmountSpent
+FROM Artist AS ar
+JOIN Album USING ('ArtistId')
+JOIN Track USING ('AlbumId')
+JOIN InvoiceLine As il USING ('TrackId')
+GROUP BY ar.Name
+ORDER By AmountSpent DESC
+
+4-- which customer spent the most on Iron Maiden (The most earner artist)? 
+
+SELECT ar.Name, sum(il.UnitPrice * il.Quantity) As AmountSpent, c.CustomerId, (c.FirstName ||' '|| c.LastName) AS CustomerName
+FROM Artist AS ar
+JOIN Album USING ('ArtistId')
+JOIN Track USING ('AlbumId')
+JOIN InvoiceLine As il USING ('TrackId')
+JOIN Invoice AS inv USING ('InvoiceId')
+JOIN Customer AS c USING ('CustomerId')
+GROUP BY ar.Name, c.CustomerId
+ORDER By AmountSpent DESC
+
+
+5-- Which is the most popular media type 
+SELECT g.Name AS GenreName, count ('TrackId') AS Tracks
+FROM Genre AS g
+JOIN Track AS t USING ('GenreId')
+GROUP BY g.Name
+ORDER BY Tracks DESC
+Limit 10
+
+
+
+6-- which Employee made the most sales?
+SELECT (e.FirstName ||' '|| e.LastName) AS EmployeeName, sum(Total) AS Sales
+From Employee AS e
+JOIN Customer AS c on e.EmployeeId = c.SupportRepId
+JOIN Invoice AS i USING ('CustomerId')
+GROUP BY EmployeeName
+ORDER by Sales DESC
